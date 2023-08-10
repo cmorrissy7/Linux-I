@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# set variables
+export DELAY=7
+
+# create looping while statement
+# this will keep looping until the quit option is chosen
+while true
+do
+	# clear screen
+	clear
+
+	# display menu choices
+	echo "Select an option to get relevant system information:"
+	echo "1. Hostname with system uptime and load"
+	echo "2. System disk space"
+	echo "3. Home space utilization"
+	echo "4. Process listing"
+	echo "5. Users logged in"
+	echo "6. PATH Variable"
+	echo "7. Quit"
+	echo -n "Enter menu choice [1-7]: "
+	
+	# read user input
+	read choice
+
+	# Validates user input
+	while (( $choice < 1 || $choice > 7 ))
+	do
+		echo "Invalid choice."
+		echo -n "Enter menu choice [1-7]: "
+		read choice
+	done
+	
+	if (( $choice > 1 || $choice < 8 ))
+	then
+		# case statement will take user input and select the option that matches
+		case $choice in
+			1)
+				hostname
+				uptime
+				sleep $DELAY
+				;;
+			2)
+				df -h
+				sleep $DELAY
+				;;
+			3)
+				df -h /home/*
+				sleep $DELAY
+				;;
+			4)
+				ps -A -f
+				sleep $DELAY
+				;;
+			5)
+				who -H -u
+				sleep $DELAY
+				;;
+			6)
+				echo $PATH
+				sleep $DELAY
+				;;
+			7)
+				echo "Quitting..."
+				sleep $DELAY
+				exit
+				;;
+		esac
+	fi
+done
