@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Create a new group. Each group must have a unique name. The script
+# must check to ensure that no duplicate group names exist on the system.
+# If a duplicate is found, an error needs to be reported, and the
+# administrator must try another group name
+read -p "Enter a new group name: " newgroup
+
+if sudo groupadd "$newgroup" 2> /dev/null
+then
+	echo "SUCCESS! New group added."
+else
+	while true;
+	do
+		read -p "ERROR: Group already exists. Enter a new group: " newgroup
+		if sudo groupadd "$newgroup" 2> /dev/null
+		then
+			break
+		fi
+	done
+	echo "SUCCESS! New group added."
+fi
+
+# Create a new user. Each user must have a unique name. The script must
+# check to ensure that no duplicate usernames exist on the system. If a
+# duplicate is found, an error needs to be reported and the administrator
+# must try another username. The user will have a Bash login shell and
+# belong to the group that was created in the previous step.
+read -p "Enter a new user to add to the new group: " newuser
+
+if sudo useradd -m "$newuser" -s /bin/bash -G "$newgroup" 2> /dev/null
+then
+	echo "SUCCESS! New user added."
+else
+	while true;
+	do
+		read -p "ERROR: User already exists. Enter a new user: " newuser
+		if sudo useradd -m "$newuser" -s /bin/bash -G "$newgroup" 2> /dev/null
+		then
+			break
+		fi
+	done
+	echo "SUCCESS! New user added."
+fi
+
+# Create a password for each user that is created.
+sudo passwd $newuser
+
+# Ensure that the new user created is a member of the new group created.
+sudo id $newuser
+
+# Create a directory at the root (/) of the file system with same name 
+# as the user created.
+sudo mkdir /$newuser
+
+# Set the ownership of the directory to the user and group created.
+sudo chown $newuser:$newgroup /$newuser
+
+# Set the permissions of the directory to full control for the owner and full
+# control for the group created.
+sudo chmod 1770 /$newuser
