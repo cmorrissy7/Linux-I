@@ -1,0 +1,86 @@
+# Change to root user
+su -
+
+# Change to root directory
+cd /
+
+# Make directory for each of the 3 departments
+mkdir Engineering
+mkdir Sales
+mkdir IS
+
+# Create a group for each department
+groupadd Engineering
+groupadd Sales
+groupadd IS
+
+# Create an admin user for each of the departments (with bash shell, and belonging to department group)
+useradd -s /bin/bash -m -g Engineering EngAdmin
+useradd -s /bin/bash -m -g Sales SalesAdmin
+useradd -s /bin/bash -m -g IS ISAdmin
+
+# Create two user accounts for each department (with bash shell, and belonging to department group)
+useradd -s /bin/bash -m -g Engineering EngUser1
+useradd -s /bin/bash -m -g Engineering EngUser2
+useradd -s /bin/bash -m -g Sales SalesUser1
+useradd -s /bin/bash -m -g Sales SalesUser2
+useradd -s /bin/bash -m -g IS ISUser1
+useradd -s /bin/bash -m -g IS ISUser2
+
+# Change the owner of each department directory to the department admin
+chown EngAdmin /Engineering
+chown SalesAdmin /Sales
+chown ISAdmin /IS
+
+# Change the group ownership of each department directory to the department group
+chgrp Engineering /Engineering
+chgrp Sales /Sales
+chgrp IS /IS
+
+# Set the permissions of the directory so that admins have full access, normal group users will have full
+# access, other users will have no access, and only the owner of a file can delete the file
+chmod 1770 /Engineering
+chmod 1770 /Sales
+chmod 1770 /IS
+
+# Create a document in each of the department directories
+echo "This file contains confidential information for the department." > /Engineering/EngFile.txt
+echo "This file contains confidential information for the department." > /Sales/SalesFile.txt
+echo "This file contains confidential information for the department." > /IS/ISFile.txt
+
+# Change ownership of file to the same owner as the department directory the file is in
+chown SalesAdmin /Sales/SalesFile.txt
+chown ISAdmin /IS/ISFile.txt
+
+# Change permissions on each file so that the admin gets full access, group users have read permission, and 
+# everyone else has no permissions.
+chmod 740 /Engineering/EngFile.txt
+chmod 740 /Sales/SalesFile.txt
+chmod 740 /IS/ISFile.txt
+
+# Everything should be set now. Use commands to verify.
+
+# Verify each user has been created
+cat /etc/passwd
+
+# Verify each group has been created
+cat /etc/group
+
+# Verify each user's group assignment
+groups EngAdmin
+groups EngUser1
+groups EngUser2
+groups SalesAdmin
+groups SalesUser1
+groups SalesUser2
+groups ISAdmin
+groups ISUser1
+groups ISUser2
+
+# Verify directory creation and permissions
+ls -l /
+
+# Verify files are in directories
+ls -l /Engineering
+ls -l /Sales
+ls -l /IS
